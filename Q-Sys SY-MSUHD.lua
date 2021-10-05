@@ -164,7 +164,13 @@ if Controls then
             sock:Write(command.."\r")
         else
             sock:Connect(Properties["IP Address"].Value, Properties["Port"].Value)
-            Timer.CallAfter(function() sock:Write(command.."\r") end, 1)
+            Timer.CallAfter(function()
+                    if sock.IsConnected ==true then
+                        sock:Write(command.."\r")
+                    else
+                        print("Cannot connect to machine...")
+                    end
+                 end, 1)
         end
     end
 
@@ -194,8 +200,7 @@ if Controls then
             SendCommand(Command)
         end
     end
-    print(Properties["IP Address"].Value)
-
+    
     sock:Connect(Properties["IP Address"].Value, Properties["Port"].Value)
 
     feedback = Timer:New()
@@ -207,7 +212,7 @@ if Controls then
 
     sock.Data = function(sock)
         --TODO Handle Feedback
-        SocketData = sock.ReadLine(TcpSocket.EOL.CrLf)
+        SocketData = sock:ReadLine(TcpSocket.EOL.CrLf)
         print(SocketData)
     end
 end
