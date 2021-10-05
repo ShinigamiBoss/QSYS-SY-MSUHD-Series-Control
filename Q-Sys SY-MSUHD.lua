@@ -205,7 +205,9 @@ if Controls then
 
     feedback:Start(1)
 
-    sock.Data = function()
+    sock.Data = function(sock)
         --TODO Handle Feedback
+        SocketData = sock.ReadLine(TcpSocket.EOL.CrLf)
+        print(SocketData)
     end
 end
