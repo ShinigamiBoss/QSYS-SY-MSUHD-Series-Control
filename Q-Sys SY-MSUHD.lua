@@ -39,26 +39,7 @@ function GetProperties()
             Min = 1,
             Max = 64
         },
-        {
-            Name = "On In Color",
-            Type = "string",
-            Value = "#DF0024"
-        },
-        {
-            Name = "Off In Color",
-            Type = "string",
-            Value = "#6C000D"
-        },
-        {
-            Name = "On Out Color",
-            Type = "string",
-            Value = "#F289AE"
-        },
-        {
-            Name = "Off Out Color",
-            Type = "string",
-            Value = "#754053"
-        }
+        
     }
     return props
 end
@@ -86,12 +67,6 @@ end
 
 function GetControlLayout(props)
 
-    local function hex2rgb (hex)
-        local hex = hex:gsub("#","")
-        local r, g, b = tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6))
-        return {r, g, b}
-    end
-
     -- layout holds representaiton of Controls
     local layout = {}
 
@@ -103,9 +78,6 @@ function GetControlLayout(props)
             Style = "Button",
             ButtonStyle = "Toggle",
             Position = { ButtonSize[1]*(x - 1) + 50, 10 },
-            Color = hex2rgb(props["On In Color"].Value),
-            UnlinkOffColor = true,
-            OffColor = hex2rgb(props["Off In Color"].Value)
         }
     end
 
@@ -115,9 +87,6 @@ function GetControlLayout(props)
             ButtonStyle = "Toggle",
             Position = { ButtonSize[1]*(x - 1) + 50, 40 },
             Size = ButtonSize,
-            Color =hex2rgb( props["On Out Color"].Value),
-            UnlinkOffColor = true,
-            OffColor = hex2rgb(props["Off Out Color"].Value)
         }
     end
 
