@@ -78,6 +78,7 @@ function GetControlLayout(props)
             Style = "Button",
             ButtonStyle = "Toggle",
             Position = { ButtonSize[1]*(x - 1) + 50, 10 },
+            WordWrap = true
         }
     end
 
@@ -87,6 +88,7 @@ function GetControlLayout(props)
             ButtonStyle = "Toggle",
             Position = { ButtonSize[1]*(x - 1) + 50, 40 },
             Size = ButtonSize,
+            WordWrap = true
         }
     end
 
@@ -121,7 +123,11 @@ end
 --Communication variables
 SetOut = "SET OUT"
 SetIn = " VS IN"
-GetStatus = "GET STA\r"
+GetStatus = "GET OUT"
+VideoStatus = " VS "
+Terminator = "\r"
+Out = "OUT"
+In = "IN"
 
 if Controls then
 
@@ -174,14 +180,52 @@ if Controls then
 
     feedback = Timer:New()
     feedback.EventHandler = function()
-        SendCommand(GetStatus)
+        for x=1,Properties["Output #"].Value do
+            Command = GetStatus..x..VideoStatus..Terminator
+            SendCommand(Command)
+        end
     end
 
-    feedback:Start(1)
+    feedback:Start(2)
 
     sock.Data = function(sock)
-        --TODO Handle Feedback
+         
+        output_nr = 0
+        input_nr = 0
+        --Feedback handling
         SocketData = sock:ReadLine(TcpSocket.EOL.CrLf)
-        print(SocketData)
+        
+        if SocketData ~= nil then
+            if string.find (SocketData, Out) >= 1 then
+                --remove "OUT"
+                SocketData = string.gsub(SocketData, Out, "")
+                
+                if string.find(SocketData, VideoStatus) >= 1 then
+                    --get output value
+                    
+                    substr = string.sub(SocketData, 1, string.find(SocketData, VideoStatus))
+                    output_nr = tonumber(substr)
+
+                    SocketData = string.sub(SocketData, string.find(SocketData,VideoStatus, 1) + string.len(VideoStatus), string.len(SocketData))
+                                
+                    if string.find(SocketData, In) >= 1 then
+                        
+                        SocketData = string.gsub(SocketData, In, "")
+                        
+                        input_nr = tonumber(SocketData)
+                    
+                        if output_nr ~= nil and input_nr ~= nil then
+                            if output_nr <= Properties["Output #"].Value and input_nr <= Properties["Input #"].Value then
+                                if input_nr == SelectedInput then
+                                    Outputs[output_nr].Boolean = true
+                                else
+                                    Outputs[output_nr].Boolean = false
+                                end
+                            end
+                        end
+                    end 
+                end
+            end
+        end
     end
 end
