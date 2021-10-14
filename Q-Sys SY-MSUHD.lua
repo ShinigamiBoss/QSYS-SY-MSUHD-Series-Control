@@ -193,9 +193,9 @@ if Controls then
         output_nr = 0
         input_nr = 0
         --Feedback handling
-        SocketData = sock:ReadLine(TcpSocket.EOL.CrLf)
+        SocketData = sock:ReadLine(TcpSocket.EOL.Custom, "\x0D")
         
-        if SocketData ~= nil then
+        if SocketData ~= nil and string.len(SocketData) >= 1 then
             if string.find (SocketData, Out) >= 1 then
                 --remove "OUT"
                 SocketData = string.gsub(SocketData, Out, "")
